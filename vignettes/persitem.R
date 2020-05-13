@@ -2,6 +2,7 @@ library(tidyverse)
 library(mirt)
 source("R/helpers.R")
 
+# generate some generic item response data
 data <-
 	simdata(a = rep(1, 10), d = rnorm(10), itemtype = "2PL", N = 100) %>%
 	as_tibble()
@@ -19,6 +20,7 @@ train <- data %>% apply(1, mask_item_response_data, 0.3) %>% t()
 test <- data
 test[!is.na(data) & !is.na(train)] <- NA
 
+# fit each model to the full data
 models <-
 	tibble(
 		dim = c(1, 1, 2),
@@ -37,6 +39,7 @@ models <-
 		bic = model %>% map_dbl(~ .@Fit$BIC)
 	)
 
+# run cv by fitting each model to the train data and assess on test data
 cv <-
 	models %>%
 	select(dim:method) %>%
@@ -47,5 +50,6 @@ cv <-
 		eval = p %>% map(evaluate_p, train, test)
 	)
 
+# see what we got
 cv %>%
 	unnest_wider(eval)

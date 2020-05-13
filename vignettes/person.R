@@ -3,10 +3,12 @@ library(rsample)
 library(mirt)
 source("R/helpers.R")
 
+# generate some generic item response data
 data <-
 	simdata(a = rep(1, 10), d = rnorm(10), itemtype = "2PL", N = 100) %>%
 	as_tibble()
 
+# fit each model to the full data
 models <-
 	tibble(
 		dim = c(1, 1, 2),
@@ -25,10 +27,12 @@ models <-
 		bic = model %>% map_dbl(~ .@Fit$BIC)
 	)
 
+# setup folds based on persons
 splits <-
 	vfold_cv(data, v = 3, repeats = 2) %>%
 	select(starts_with("id"), splits)
 
+# run cv by fitting each model to the train data and assess on test data
 cv <-
 	crossing(
 		models %>% select(dim:method),
@@ -50,6 +54,7 @@ cv <-
 			)
 	)
 
+# see what we got
 cv %>%
 	group_by(dim, itemtype, method) %>%
 	summarize(out_log_lik = mean(log_lik)) %>%
