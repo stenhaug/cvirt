@@ -4,6 +4,7 @@ get_p_from_anova <- function(mod1, mod2){
 	anova(mod1, mod2)$p[2]
 }
 
+
 get_split <- function(id, id2, splits){
 	splits$splits[[which(splits$id == id & splits$id2 == id2)]]
 }
