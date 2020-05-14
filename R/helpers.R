@@ -1,3 +1,4 @@
+
 get_p_from_anova <- function(mod1, mod2){
 	if("logical" %in% c(class(mod1), class(mod2))) {return(NA_real_)} # catches missing
 	anova(mod1, mod2)$p[2]
